@@ -36,7 +36,7 @@
   }
 ````
 
-- [ ] Crear .gitignore
+- [x] Crear .gitignore
 
 - [ ] **Agregar y commitear** cambios  
        `git add .`  

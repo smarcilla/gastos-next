@@ -9,7 +9,7 @@
     "prepare": "husky"
   },
   "lint-staged": {
-    "*.{ts,tsx,js,jsx}": "eslint --fix"
+    "**/*.{ts,tsx,js,jsx}": "eslint --fix"
   },
   "keywords": [],
   "author": "",
