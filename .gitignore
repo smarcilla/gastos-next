@@ -1,0 +1,89 @@
+# ------------------------------
+
+# Core Node / pnpm
+
+# ------------------------------
+
+node\_modules/
+*.log
+npm-debug.log*
+yarn-debug.log\*
+yarn-error.log\*
+pnpm-debug.log\*
+
+# ------------------------------
+
+# Next.js build & cache folders
+
+# ------------------------------
+
+.next/
+.turbo/
+out/
+dist/
+
+# ------------------------------
+
+# TypeScript
+
+# ------------------------------
+
+\*.tsbuildinfo
+
+# ------------------------------
+
+# Environment variables & secrets
+
+# ------------------------------
+
+.env
+.env.\*.local
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# ------------------------------
+
+# Test & coverage
+
+# ------------------------------
+
+coverage/
+.playwright/
+
+# ------------------------------
+
+# Husky generated files
+
+# ------------------------------
+
+.husky/\_
+
+# ------------------------------
+
+# IDE / Editor
+
+# ------------------------------
+
+.vscode/
+.idea/
+\*.sw?
+
+# ------------------------------
+
+# OS artifacts
+
+# ------------------------------
+
+.DS\_Store
+Thumbs.db
+\$RECYCLE.BIN/
+
+# ------------------------------
+
+# Miscellaneous
+
+# ------------------------------
+
+\*.local
