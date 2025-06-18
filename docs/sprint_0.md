@@ -38,13 +38,13 @@
 
 - [x] Crear .gitignore
 
-- [ ] **Agregar y commitear** cambios  
+- [x] **Agregar y commitear** cambios  
        `git add .`  
        `git commit -m "chore: sprint‑0 setup"`
-- [ ] **Push** inicial  
+- [x] **Push** inicial  
        `git push -u origin sprint/0-kickoff`
-- [ ] **Abrir Pull Request** a `main`; revisarlo y **merge** (squash‑merge recomendado).
-- [ ] **Marcar** la fila «Semana 0» como ✅ en `ROADMAP.md`.
+- [x] **Abrir Pull Request** a `main`; revisarlo y **merge** (squash‑merge recomendado).
+- [x] **Marcar** la fila «Semana 0» como ✅ en `ROADMAP.md`.
 
 ---
 
