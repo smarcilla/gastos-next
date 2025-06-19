@@ -1,89 +1,41 @@
-# ------------------------------
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-# Core Node / pnpm
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
 
-# ------------------------------
+# testing
+/coverage
 
-node\_modules/
-*.log
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
 npm-debug.log*
-yarn-debug.log\*
-yarn-error.log\*
-pnpm-debug.log\*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
 
-# ------------------------------
+# env files (can opt-in for committing if needed)
+.env*
 
-# Next.js build & cache folders
+# vercel
+.vercel
 
-# ------------------------------
-
-.next/
-.turbo/
-out/
-dist/
-
-# ------------------------------
-
-# TypeScript
-
-# ------------------------------
-
-\*.tsbuildinfo
-
-# ------------------------------
-
-# Environment variables & secrets
-
-# ------------------------------
-
-.env
-.env.\*.local
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-
-# ------------------------------
-
-# Test & coverage
-
-# ------------------------------
-
-coverage/
-.playwright/
-
-# ------------------------------
-
-# Husky generated files
-
-# ------------------------------
-
-.husky/\_
-
-# ------------------------------
-
-# IDE / Editor
-
-# ------------------------------
-
-.vscode/
-.idea/
-\*.sw?
-
-# ------------------------------
-
-# OS artifacts
-
-# ------------------------------
-
-.DS\_Store
-Thumbs.db
-\$RECYCLE.BIN/
-
-# ------------------------------
-
-# Miscellaneous
-
-# ------------------------------
-
-\*.local
+# typescript
+*.tsbuildinfo
+next-env.d.ts
