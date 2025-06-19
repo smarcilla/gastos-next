@@ -12,7 +12,7 @@
 | ------ | ---------------------------------------- | ----- |
 | -1     | Crear `ROADMAP.md`                       | ✅    |
 | 0      | Kick‑off: repo, husky, README            | ✅    |
-| 1      | Bootstrap Next 15 + Tailwind + shadcn/ui | ❌    |
+| 1      | Bootstrap Next 15 + Tailwind + shadcn/ui | ✅    |
 | 2      | ESLint/Prettier + tests vacíos           | ❌    |
 | 3      | Auth Google + Keytar                     | ❌    |
 | 4      | Sheets helper (read/append)              | ❌    |

@@ -92,7 +92,7 @@ pnpm dlx shadcn@latest add button card
 
 - [x] **Actualizar `.gitignore`** si el generador añadió carpetas nuevas (ej. `/.vscode-test`).
 
-- [ ] **Commit y push**
+- [x] **Commit y push**
 
   ```powershell
   git add .
@@ -100,9 +100,9 @@ pnpm dlx shadcn@latest add button card
   git push -u origin sprint/1-bootstrap
   ```
 
-- [ ] **Crear Pull Request** → revisar, squash‑merge a `main`.
+- [x] **Crear Pull Request** → revisar, squash‑merge a `main`.
 
-- [ ] **Marcar** la fila «Semana 1» como ✅ en `ROADMAP.md`.
+- [x] **Marcar** la fila «Semana 1» como ✅ en `ROADMAP.md`.
 
 ---
 
