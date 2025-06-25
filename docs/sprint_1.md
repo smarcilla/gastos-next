@@ -42,8 +42,8 @@ pnpm install
   ```powershell
   pnpm add @tanstack/react-query
   ```
-
   - [x] **Re-inicializar Husky** (tras mover archivos se pierde `.husky`)
+
 ```powershell
 # 1. Elimina el fichero corrupto
 Remove-Item .husky\pre-commit
@@ -55,20 +55,19 @@ Set-Content .husky/pre-commit "pnpm exec lint-staged" -NoNewline
 # 3. (git) Marca el archivo como ejecutable
 git add .husky/pre-commit
 git update-index --chmod=+x .husky/pre-commit
-````
+```
 
 - [x] **Configurar shadcn/ui**
 
-````powershell
+```powershell
 # 1. Inicializar shadcn
 pnpm dlx shadcn@latest init -y
 
 # 2. Añadir componentes, p. ej. Button y Card
 pnpm dlx shadcn@latest add button card
-````
+```
 
 - [x] **Crear layout mínimo**
-
   - `/src/app/layout.tsx` con `<html lang="es">`, `<body className="font-sans">`.
   - `/src/app/page.tsx` que muestre:
 

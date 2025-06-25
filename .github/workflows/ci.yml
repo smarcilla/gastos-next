@@ -1,0 +1,49 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Clona el repo
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2. Prepara la versión de Node que usas en local (ajusta si lo necesitas)
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # 3. Instala y configura PNPM
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9
+
+      # 4. Cachea las dependencias de PNPM
+      - name: Cache PNPM store
+        uses: actions/cache@v4
+        with:
+          path: ~/.pnpm-store
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      # 5. Instala las dependencias del proyecto
+      - name: Install dependencies
+        run: pnpm install
+
+      # 6. Comprueba el formateo (falla si hay archivos sin formatear)
+      - name: Check Prettier formatting
+        run: pnpm format --check
+
+      # 7. Lint de todo el código
+      - name: Lint code
+        run: pnpm lint
+
+      # 8. Corre los tests
+      - name: Run tests
+        run: pnpm test
