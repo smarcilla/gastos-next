@@ -87,4 +87,5 @@
 
 ### Logs
 
+- 25/06/2025 | Falla github actions en repo
 - 24/06/2025 | Fallan los unit tests
