@@ -1,10 +1,13 @@
 import { OAuth2Client } from "googleapis";
+import keytar from "keytar";
 
 /**
  * Service wrapper around Google's OAuth2 client.
  */
 export class GoogleAuthService {
   private client: OAuth2Client;
+  private static readonly SERVICE = "gastos-next";
+  private static readonly ACCOUNT = "default";
 
   /**
    * Create a new instance of GoogleAuthService.
@@ -23,6 +26,17 @@ export class GoogleAuthService {
       clientSecret: this.clientSecret,
       redirectUri: this.redirectUri,
     });
+    void (async () => {
+      try {
+        const refreshToken = await this.loadToken();
+        if (refreshToken) {
+          this.client.setCredentials({ refresh_token: refreshToken });
+          await this.refreshIfNeeded();
+        }
+      } catch {
+        /* ignore load errors */
+      }
+    })();
   }
 
   /**
@@ -31,8 +45,11 @@ export class GoogleAuthService {
    * @returns A promise that resolves with the authentication URL.
    */
   async signIn(): Promise<string> {
-    // TODO: Implement sign-in logic
-    return Promise.reject(new Error("TODO"));
+    return this.client.generateAuthUrl({
+      access_type: "offline",
+      prompt: "consent",
+      scope: ["https://www.googleapis.com/auth/userinfo.profile"],
+    });
   }
 
   /**
@@ -41,8 +58,8 @@ export class GoogleAuthService {
    * @returns A promise that resolves with the access token string, or `null` if not available.
    */
   async getAccessToken(): Promise<string | null> {
-    // TODO: Implement logic to retrieve the access token
-    return Promise.reject(new Error("TODO"));
+    await this.refreshIfNeeded();
+    return this.client.credentials.access_token ?? null;
   }
 
   /**
@@ -51,8 +68,19 @@ export class GoogleAuthService {
    * @returns A promise that resolves once the token has been refreshed.
    */
   async refreshIfNeeded(): Promise<void> {
-    // TODO: Implement token refresh logic
-    return Promise.reject(new Error("TODO"));
+    const { refresh_token, expiry_date, access_token } =
+      this.client.credentials;
+    if (!refresh_token) {
+      return;
+    }
+    const now = Date.now();
+    if (!access_token || !expiry_date || expiry_date - now < 60_000) {
+      const { credentials } = await this.client.refreshAccessToken();
+      this.client.setCredentials(credentials);
+      if (credentials.refresh_token) {
+        await this.saveToken(credentials.refresh_token);
+      }
+    }
   }
 
   /**
@@ -61,7 +89,45 @@ export class GoogleAuthService {
    * @returns A promise that resolves when the user has been signed out.
    */
   async signOut(): Promise<void> {
-    // TODO: Implement sign-out logic
-    return Promise.reject(new Error("TODO"));
+    try {
+      const token = this.client.credentials.access_token;
+      if (token) {
+        await this.client.revokeToken(token);
+      }
+    } catch {
+      // ignore revoke errors
+    }
+    this.client.setCredentials({});
+    try {
+      await keytar.deletePassword(
+        GoogleAuthService.SERVICE,
+        GoogleAuthService.ACCOUNT,
+      );
+    } catch {
+      /* ignore deletion errors */
+    }
+  }
+
+  private async saveToken(refreshToken: string): Promise<void> {
+    try {
+      await keytar.setPassword(
+        GoogleAuthService.SERVICE,
+        GoogleAuthService.ACCOUNT,
+        refreshToken,
+      );
+    } catch {
+      /* ignore persistence errors */
+    }
+  }
+
+  private async loadToken(): Promise<string | null> {
+    try {
+      return await keytar.getPassword(
+        GoogleAuthService.SERVICE,
+        GoogleAuthService.ACCOUNT,
+      );
+    } catch {
+      return null;
+    }
   }
 }
