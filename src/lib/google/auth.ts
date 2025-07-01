@@ -1,5 +1,14 @@
 import { OAuth2Client } from "googleapis";
-import keytar from "keytar";
+
+async function getKeytar() {
+  try {
+    return await import("keytar");
+  } catch {
+    return null; // Edge runtime or missing native addon
+  }
+}
+
+export const isKeytarAvailable = async () => !!(await getKeytar());
 
 /**
  * Service wrapper around Google's OAuth2 client.
@@ -98,8 +107,13 @@ export class GoogleAuthService {
       // ignore revoke errors
     }
     this.client.setCredentials({});
+    const kt = await getKeytar();
+    if (!kt) {
+      console.warn("Keytar unavailable – skipping secure storage");
+      return;
+    }
     try {
-      await keytar.deletePassword(
+      await kt.deletePassword(
         GoogleAuthService.SERVICE,
         GoogleAuthService.ACCOUNT,
       );
@@ -109,8 +123,13 @@ export class GoogleAuthService {
   }
 
   private async saveToken(refreshToken: string): Promise<void> {
+    const kt = await getKeytar();
+    if (!kt) {
+      console.warn("Keytar unavailable – skipping secure storage");
+      return;
+    }
     try {
-      await keytar.setPassword(
+      await kt.setPassword(
         GoogleAuthService.SERVICE,
         GoogleAuthService.ACCOUNT,
         refreshToken,
@@ -121,8 +140,13 @@ export class GoogleAuthService {
   }
 
   private async loadToken(): Promise<string | null> {
+    const kt = await getKeytar();
+    if (!kt) {
+      console.warn("Keytar unavailable – skipping secure storage");
+      return null;
+    }
     try {
-      return await keytar.getPassword(
+      return await kt.getPassword(
         GoogleAuthService.SERVICE,
         GoogleAuthService.ACCOUNT,
       );
@@ -130,4 +154,19 @@ export class GoogleAuthService {
       return null;
     }
   }
+}
+
+export async function verifyIdToken(
+  idToken: string,
+  clientId: string,
+): Promise<{ email: string } | null> {
+  try {
+    const client = new OAuth2Client({ clientId });
+    const ticket = await client.verifyIdToken({ idToken, audience: clientId });
+    const payload = ticket.getPayload();
+    if (payload?.email) return { email: payload.email };
+  } catch {
+    // ignore errors
+  }
+  return null;
 }
