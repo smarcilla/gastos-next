@@ -1,41 +1,12 @@
 import { useMutation } from "@tanstack/react-query";
-import { useSyncExternalStore } from "react";
-import { googleAuthService } from "@/middleware";
-
-export interface AuthState {
-  isAuthenticated: boolean;
-  userProfile?: unknown;
-}
-
-type Listener = () => void;
-const listeners = new Set<Listener>();
-let state: AuthState = { isAuthenticated: false };
-
-function subscribe(listener: Listener): () => void {
-  listeners.add(listener);
-  return () => listeners.delete(listener);
-}
-
-function getSnapshot(): AuthState {
-  return state;
-}
-
-function setState(partial: AuthState) {
-  state = partial;
-  listeners.forEach((l) => l());
-}
+import { signIn, signOut, useSession } from "next-auth/react";
 
 async function loginRequest() {
-  const url = await googleAuthService.signIn();
-  if (typeof window !== "undefined") {
-    window.location.href = url;
-  }
-  setState({ isAuthenticated: true, userProfile: undefined });
+  await signIn("google");
 }
 
 async function logoutRequest() {
-  await googleAuthService.signOut();
-  setState({ isAuthenticated: false, userProfile: undefined });
+  await signOut();
 }
 
 /**
@@ -47,18 +18,14 @@ async function logoutRequest() {
  * @returns Current authentication state and mutation actions.
  */
 export function useGoogleAuth() {
+  const { data: session } = useSession();
   const loginMut = useMutation({ mutationFn: loginRequest });
   const logoutMut = useMutation({ mutationFn: logoutRequest });
-  const { isAuthenticated, userProfile } = useSyncExternalStore(
-    subscribe,
-    getSnapshot,
-    getSnapshot,
-  );
 
   return {
     login: loginMut.mutateAsync,
     logout: logoutMut.mutateAsync,
-    isAuthenticated,
-    userProfile,
+    isAuthenticated: !!session,
+    userProfile: session?.user,
   } as const;
 }
