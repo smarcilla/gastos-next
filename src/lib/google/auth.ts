@@ -1,13 +1,10 @@
 import { OAuth2Client } from "googleapis";
-import keytar from "keytar";
 
 /**
  * Service wrapper around Google's OAuth2 client.
  */
 export class GoogleAuthService {
   private client: OAuth2Client;
-  private static readonly SERVICE = "gastos-next";
-  private static readonly ACCOUNT = "default";
 
   /**
    * Create a new instance of GoogleAuthService.
@@ -26,17 +23,6 @@ export class GoogleAuthService {
       clientSecret: this.clientSecret,
       redirectUri: this.redirectUri,
     });
-    void (async () => {
-      try {
-        const refreshToken = await this.loadToken();
-        if (refreshToken) {
-          this.client.setCredentials({ refresh_token: refreshToken });
-          await this.refreshIfNeeded();
-        }
-      } catch {
-        /* ignore load errors */
-      }
-    })();
   }
 
   /**
@@ -77,9 +63,6 @@ export class GoogleAuthService {
     if (!access_token || !expiry_date || expiry_date - now < 60_000) {
       const { credentials } = await this.client.refreshAccessToken();
       this.client.setCredentials(credentials);
-      if (credentials.refresh_token) {
-        await this.saveToken(credentials.refresh_token);
-      }
     }
   }
 
@@ -98,36 +81,5 @@ export class GoogleAuthService {
       // ignore revoke errors
     }
     this.client.setCredentials({});
-    try {
-      await keytar.deletePassword(
-        GoogleAuthService.SERVICE,
-        GoogleAuthService.ACCOUNT,
-      );
-    } catch {
-      /* ignore deletion errors */
-    }
-  }
-
-  private async saveToken(refreshToken: string): Promise<void> {
-    try {
-      await keytar.setPassword(
-        GoogleAuthService.SERVICE,
-        GoogleAuthService.ACCOUNT,
-        refreshToken,
-      );
-    } catch {
-      /* ignore persistence errors */
-    }
-  }
-
-  private async loadToken(): Promise<string | null> {
-    try {
-      return await keytar.getPassword(
-        GoogleAuthService.SERVICE,
-        GoogleAuthService.ACCOUNT,
-      );
-    } catch {
-      return null;
-    }
   }
 }

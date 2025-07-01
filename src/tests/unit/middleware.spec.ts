@@ -23,15 +23,17 @@ jest.mock("next/server", () => {
 });
 
 // Mock GoogleAuthService to avoid importing googleapis
-jest.mock("@/lib/google/auth", () => {
+let authSession: unknown = null;
+jest.mock("@/nextauth", () => {
   return {
-    GoogleAuthService: jest.fn().mockImplementation(() => ({
-      getAccessToken: jest.fn(),
-    })),
+    auth: (handler: (req: { auth?: unknown }) => unknown) => {
+      return (req: unknown) =>
+        handler({ ...(req as object), auth: authSession });
+    },
   };
 });
 
-import { middleware, googleAuthService } from "@/middleware";
+import { middleware } from "@/middleware";
 import { NextRequest } from "next/server";
 
 // Jest unit tests for the middleware
@@ -39,21 +41,18 @@ import { NextRequest } from "next/server";
 describe("middleware", () => {
   beforeEach(() => {
     jest.restoreAllMocks();
+    authSession = null;
   });
 
   it("returns 401 when token missing", async () => {
-    jest.spyOn(googleAuthService, "getAccessToken").mockResolvedValueOnce(null);
+    authSession = null;
     const req = new NextRequest();
     const res = await middleware(req);
     expect(res.status).toBe(401);
   });
 
   it("sets header on success", async () => {
-    const payload = { email: "user@example.com" };
-    const token = `a.${Buffer.from(JSON.stringify(payload)).toString("base64url")}.c`;
-    jest
-      .spyOn(googleAuthService, "getAccessToken")
-      .mockResolvedValueOnce(token);
+    authSession = { user: { email: "user@example.com" } };
     const req = new NextRequest();
     const res = await middleware(req);
     expect(res.headers.get("x-user-email")).toBe("user@example.com");
