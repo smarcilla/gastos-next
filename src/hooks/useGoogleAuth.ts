@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import { useSyncExternalStore } from "react";
-import { googleAuthService } from "@/middleware";
+import { googleAuthService } from "@/lib/google/service";
 
 export interface AuthState {
   isAuthenticated: boolean;
